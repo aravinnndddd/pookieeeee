@@ -4,13 +4,12 @@ import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Send, Loader2, Paperclip } from 'lucide-react';
+import { Send, Loader2 } from 'lucide-react';
 
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const formSchema = z.object({
   text: z.string().min(1, 'Entry cannot be empty.'),
@@ -63,20 +62,8 @@ export function EntryForm({ onNewEntry }: EntryFormProps) {
   };
 
   return (
-    <TooltipProvider>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-start gap-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button type="button" variant="ghost" size="icon" className="shrink-0" disabled={isSubmitting}>
-                <Paperclip className="h-4 w-4" />
-                <span className="sr-only">Attach media</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Attaching media is coming soon!</p>
-            </TooltipContent>
-          </Tooltip>
           <FormField
             control={form.control}
             name="text"
@@ -104,6 +91,5 @@ export function EntryForm({ onNewEntry }: EntryFormProps) {
           </Button>
         </form>
       </Form>
-    </TooltipProvider>
   );
 }
