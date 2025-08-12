@@ -1,6 +1,6 @@
 'use client';
 import { format, formatDistanceToNow } from 'date-fns';
-import { MapPin, User, Tag } from 'lucide-react';
+import { MapPin, User, Building, Tag, CalendarIcon } from 'lucide-react';
 
 import { type JournalEntry } from '@/types';
 import {
@@ -33,19 +33,36 @@ export function EntryCard({ entry }: EntryCardProps) {
         <p className="whitespace-pre-wrap text-base">{entry.text}</p>
       </CardContent>
       <CardFooter className="flex flex-wrap gap-2 text-sm">
-        {entry.peopleMentioned.length > 0 &&
-          entry.peopleMentioned.map((person) => (
+        {entry.people?.map((person) => (
             <Badge key={person} variant="secondary" className="bg-accent/20 text-accent-foreground/80 hover:bg-accent/30">
               <User className="mr-1 h-3 w-3" />
               {person}
             </Badge>
           ))}
-        {entry.location && (
-          <Badge variant="secondary" className="bg-primary/10 text-primary/90 hover:bg-primary/20">
+        {entry.locations?.map((location) => (
+          <Badge key={location} variant="secondary" className="bg-primary/10 text-primary/90 hover:bg-primary/20">
             <MapPin className="mr-1 h-3 w-3" />
-            {entry.location}
+            {location}
           </Badge>
-        )}
+        ))}
+        {entry.organizations?.map((org) => (
+          <Badge key={org} variant="secondary" className="bg-blue-100 text-blue-800 hover:bg-blue-200">
+            <Building className="mr-1 h-3 w-3" />
+            {org}
+          </Badge>
+        ))}
+        {entry.dates?.map((date) => (
+            <Badge key={date} variant="secondary" className="bg-purple-100 text-purple-800 hover:bg-purple-200">
+              <CalendarIcon className="mr-1 h-3 w-3" />
+              {date}
+            </Badge>
+          ))}
+        {entry.topics?.map((topic) => (
+            <Badge key={topic} variant="outline">
+              <Tag className="mr-1 h-3 w-3" />
+              {topic}
+            </Badge>
+          ))}
       </CardFooter>
     </Card>
   );

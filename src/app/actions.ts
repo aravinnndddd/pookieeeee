@@ -1,23 +1,20 @@
 'use server';
-import { tagEntry, type TagEntryInput } from '@/ai/flows/tag-entry';
+import { tagEntry, type TagEntryInput, type TagEntryOutput } from '@/ai/flows/tag-entry';
 
-export async function getTagsForEntry(text: string): Promise<{
-  people: string[];
-  location: string | null;
-}> {
+export async function getTagsForEntry(text: string): Promise<Partial<TagEntryOutput>> {
   try {
     const input: TagEntryInput = { text };
     const result = await tagEntry(input);
-    return {
-      people: result.peopleMentioned || [],
-      location: result.location || null,
-    };
+    return result;
   } catch (error) {
     console.error('AI tagging failed:', error);
     // Return a default value in case of an error to ensure the app doesn't crash
     return {
       people: [],
-      location: null,
+      locations: [],
+      organizations: [],
+      dates: [],
+      topics: [],
     };
   }
 }

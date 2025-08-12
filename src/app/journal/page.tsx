@@ -51,13 +51,14 @@ function JournalPage() {
     const tags = await getTagsForEntry(text);
 
     const newEntry: Omit<JournalEntry, 'id'> = {
-      // UID is now 'anonymous' since there are no users.
       uid: 'anonymous',
       text: text,
       dateTime: new Date().toISOString(),
-      peopleMentioned: tags?.people || [],
-      location: tags?.location || null,
-      tags: [],
+      people: tags.people || [],
+      locations: tags.locations || [],
+      organizations: tags.organizations || [],
+      dates: tags.dates || [],
+      topics: tags.topics || [],
       media: [],
     };
     await addDoc(collection(db, 'entries'), newEntry);
