@@ -34,7 +34,7 @@ export function EntryCard({ entry }: EntryCardProps) {
       </CardContent>
       <CardFooter className="flex flex-wrap gap-2 text-sm">
         {entry.people?.map((person) => (
-            <Badge key={person} variant="secondary" className="bg-accent/20 text-accent-foreground/80 hover:bg-accent/30 dark:bg-accent/30 dark:text-accent-foreground/90 dark:hover:bg-accent/40">
+            <Badge key={person} variant="secondary" className="bg-pink-100 text-pink-800 hover:bg-pink-200 dark:bg-pink-900/50 dark:text-pink-300 dark:hover:bg-pink-900/70">
               <User className="mr-1 h-3 w-3" />
               {person}
             </Badge>
