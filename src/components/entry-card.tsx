@@ -34,25 +34,25 @@ export function EntryCard({ entry }: EntryCardProps) {
       </CardContent>
       <CardFooter className="flex flex-wrap gap-2 text-sm">
         {entry.people?.map((person) => (
-            <Badge key={person} variant="secondary" className="bg-accent/20 text-accent-foreground/80 hover:bg-accent/30">
+            <Badge key={person} variant="secondary" className="bg-accent/20 text-accent-foreground/80 hover:bg-accent/30 dark:bg-accent/30 dark:text-accent-foreground/90 dark:hover:bg-accent/40">
               <User className="mr-1 h-3 w-3" />
               {person}
             </Badge>
           ))}
         {entry.locations?.map((location) => (
-          <Badge key={location} variant="secondary" className="bg-primary/10 text-primary/90 hover:bg-primary/20">
+          <Badge key={location} variant="secondary" className="bg-primary/10 text-primary/90 hover:bg-primary/20 dark:bg-primary/20 dark:text-primary-foreground/80 dark:hover:bg-primary/30">
             <MapPin className="mr-1 h-3 w-3" />
             {location}
           </Badge>
         ))}
         {entry.organizations?.map((org) => (
-          <Badge key={org} variant="secondary" className="bg-blue-100 text-blue-800 hover:bg-blue-200">
+          <Badge key={org} variant="secondary" className="bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900/50 dark:text-blue-300 dark:hover:bg-blue-900/70">
             <Building className="mr-1 h-3 w-3" />
             {org}
           </Badge>
         ))}
         {entry.dates?.map((date) => (
-            <Badge key={date} variant="secondary" className="bg-purple-100 text-purple-800 hover:bg-purple-200">
+            <Badge key={date} variant="secondary" className="bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-900/50 dark:text-purple-300 dark:hover:bg-purple-900/70">
               <CalendarIcon className="mr-1 h-3 w-3" />
               {date}
             </Badge>
