@@ -1,0 +1,10 @@
+export type JournalEntry = {
+  id: string;
+  text: string;
+  dateTime: string; // ISO string
+  peopleMentioned: string[];
+  location: string | null;
+  // `tags` and `media` are included for future enhancements
+  tags: string[]; 
+  media: { type: 'photo' | 'video' | 'voice'; url: string }[];
+};
