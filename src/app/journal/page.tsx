@@ -7,15 +7,10 @@ import {
   Download,
   ScrollText,
   Search as SearchIcon,
-  LogOut,
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollection } from 'react-firebase-hooks/firestore';
-import { collection, query, where, orderBy, addDoc } from 'firebase/firestore';
-import { GoogleAuthProvider, EmailAuthProvider, signOut } from 'firebase/auth';
-import { useRouter } from 'next/navigation';
-import StyledFirebaseAuth from 'firebaseui-react/StyledFirebaseAuth';
+import { collection, query, orderBy, addDoc } from 'firebase/firestore';
 
 
 import { type JournalEntry } from '@/types';
@@ -31,44 +26,19 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { auth, db } from '@/lib/firebase';
+import { db } from '@/lib/firebase';
 import { getTagsForEntry } from '@/app/actions';
 
-const uiConfig = {
-  signInFlow: 'popup',
-  signInOptions: [
-    GoogleAuthProvider.PROVIDER_ID,
-    EmailAuthProvider.PROVIDER_ID,
-  ],
-  callbacks: {
-    signInSuccessWithAuthResult: () => false,
-  },
-};
-
-
-function SignIn() {
-  return (
-    <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-foreground">
-        <div className="text-center space-y-4">
-            <h1 className="text-4xl font-headline font-bold">Pookie Journal</h1>
-            <p className="text-muted-foreground">Please sign in to continue</p>
-            <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={auth} />
-        </div>
-    </div>
-  );
-}
 
 function JournalPage() {
-  const [user, loading] = useAuthState(auth);
-  const router = useRouter();
-
   const [view, setView] = React.useState<'timeline' | 'calendar'>('timeline');
   const [searchQuery, setSearchQuery] = React.useState('');
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>();
 
   const entriesRef = collection(db, 'entries');
-  const entriesQuery = user ? query(entriesRef, where('uid', '==', user.uid), orderBy('dateTime', 'desc')) : null;
-  const [entriesSnapshot] = useCollection(entriesQuery);
+  // Since there is no user, we can order all entries by date.
+  const entriesQuery = query(entriesRef, orderBy('dateTime', 'desc'));
+  const [entriesSnapshot, loading] = useCollection(entriesQuery);
 
   const entries: JournalEntry[] = React.useMemo(() => {
     if (!entriesSnapshot) return [];
@@ -77,11 +47,11 @@ function JournalPage() {
 
 
   const handleNewEntry = async (text: string) => {
-    if (!user) return;
     const tags = await getTagsForEntry(text);
 
     const newEntry: Omit<JournalEntry, 'id'> = {
-      uid: user.uid,
+      // UID is now 'anonymous' since there are no users.
+      uid: 'anonymous',
       text: text,
       dateTime: new Date().toISOString(),
       peopleMentioned: tags?.people || [],
@@ -104,11 +74,6 @@ function JournalPage() {
     linkElement.click();
     document.body.removeChild(linkElement);
   };
-
-  const handleSignOut = async () => {
-    await signOut(auth);
-    router.push('/');
-  }
   
   const filteredEntries = React.useMemo(() => {
     let result = entries;
@@ -145,10 +110,6 @@ function JournalPage() {
     );
   }
 
-  if (!user) {
-    return <SignIn />;
-  }
-
 
   return (
     <TooltipProvider>
@@ -168,17 +129,6 @@ function JournalPage() {
               </TooltipTrigger>
               <TooltipContent>
                 <p>Export all entries as JSON</p>
-              </TooltipContent>
-            </Tooltip>
-             <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" onClick={handleSignOut}>
-                  <LogOut className="h-5 w-5" />
-                  <span className="sr-only">Sign Out</span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Sign Out</p>
               </TooltipContent>
             </Tooltip>
           </div>
