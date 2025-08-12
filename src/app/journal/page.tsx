@@ -13,8 +13,10 @@ import { format } from 'date-fns';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollection } from 'react-firebase-hooks/firestore';
 import { collection, query, where, orderBy, addDoc } from 'firebase/firestore';
-import { GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
+import { GoogleAuthProvider, EmailAuthProvider, signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
+import StyledFirebaseAuth from 'firebaseui-react/StyledFirebaseAuth';
+
 
 import { type JournalEntry } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -32,18 +34,25 @@ import {
 import { auth, db } from '@/lib/firebase';
 import { getTagsForEntry } from '@/app/actions';
 
-function SignIn() {
-  const signInWithGoogle = () => {
-    const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider);
-  };
+const uiConfig = {
+  signInFlow: 'popup',
+  signInOptions: [
+    GoogleAuthProvider.PROVIDER_ID,
+    EmailAuthProvider.PROVIDER_ID,
+  ],
+  callbacks: {
+    signInSuccessWithAuthResult: () => false,
+  },
+};
 
+
+function SignIn() {
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-foreground">
         <div className="text-center space-y-4">
             <h1 className="text-4xl font-headline font-bold">Pookie Journal</h1>
             <p className="text-muted-foreground">Please sign in to continue</p>
-            <Button onClick={signInWithGoogle} size="lg">Sign in with Google</Button>
+            <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={auth} />
         </div>
     </div>
   );
