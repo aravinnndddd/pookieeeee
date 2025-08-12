@@ -28,6 +28,7 @@ import {
 } from '@/components/ui/tooltip';
 import { db } from '@/lib/firebase';
 import { getTagsForEntry } from '@/app/actions';
+import { Skeleton } from '@/components/ui/skeleton';
 
 
 function JournalPage() {
@@ -102,15 +103,6 @@ function JournalPage() {
     return result;
   }, [entries, searchQuery, view, selectedDate]);
 
-  if (loading) {
-    return (
-        <div className="flex h-screen items-center justify-center">
-            <p>Loading...</p>
-        </div>
-    );
-  }
-
-
   return (
     <TooltipProvider>
       <div className="flex h-screen w-full flex-col bg-background text-foreground">
@@ -164,7 +156,13 @@ function JournalPage() {
           </div>
 
           <main className="flex-1 overflow-auto rounded-lg p-2">
-            {view === 'timeline' ? (
+            {loading ? (
+              <div className="space-y-4">
+                <Skeleton className="h-24 w-full" />
+                <Skeleton className="h-24 w-full" />
+                <Skeleton className="h-24 w-full" />
+              </div>
+            ) : view === 'timeline' ? (
               <Timeline entries={filteredEntries} />
             ) : (
               <CalendarView
@@ -173,7 +171,7 @@ function JournalPage() {
                 selectedDate={selectedDate}
               />
             )}
-             {view === 'calendar' && selectedDate && (
+             {view === 'calendar' && selectedDate && !loading && (
                 <div className="mt-4 h-full">
                     <h2 className="text-lg font-semibold mb-2 font-headline px-2">Entries for {format(selectedDate, 'PPP')}</h2>
                     <Timeline entries={filteredEntries} />
