@@ -69,14 +69,14 @@ function JournalPage() {
 
   const handleNewEntry = async (text: string) => {
     if (!user) return;
-    const { people, location } = await getTagsForEntry(text);
+    const tags = await getTagsForEntry(text);
 
     const newEntry: Omit<JournalEntry, 'id'> = {
       uid: user.uid,
       text: text,
       dateTime: new Date().toISOString(),
-      peopleMentioned: people,
-      location: location,
+      peopleMentioned: tags?.people || [],
+      location: tags?.location || null,
       tags: [],
       media: [],
     };
