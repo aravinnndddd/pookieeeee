@@ -6,8 +6,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Send, Loader2, Paperclip } from 'lucide-react';
 
-import { type JournalEntry } from '@/types';
-import { getTagsForEntry } from '@/app/actions';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -19,7 +17,7 @@ const formSchema = z.object({
 });
 
 type EntryFormProps = {
-  onNewEntry: (entry: JournalEntry) => void;
+  onNewEntry: (text: string) => Promise<void>;
 };
 
 export function EntryForm({ onNewEntry }: EntryFormProps) {
@@ -37,19 +35,7 @@ export function EntryForm({ onNewEntry }: EntryFormProps) {
     if (!values.text.trim()) return;
     setIsSubmitting(true);
     try {
-      const { people, location } = await getTagsForEntry(values.text);
-
-      const newEntry: JournalEntry = {
-        id: `${Date.now()}-${Math.random()}`,
-        text: values.text,
-        dateTime: new Date().toISOString(),
-        peopleMentioned: people,
-        location: location,
-        tags: [],
-        media: [],
-      };
-
-      onNewEntry(newEntry);
+      await onNewEntry(values.text);
       form.reset();
       toast({
         title: 'Memory Saved',
@@ -68,7 +54,7 @@ export function EntryForm({ onNewEntry }: EntryFormProps) {
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (event.key === 'Enter' && !event.shiftKey) {
+    if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
       event.preventDefault();
       if (!isSubmitting) {
         form.handleSubmit(onSubmit)();
@@ -98,7 +84,7 @@ export function EntryForm({ onNewEntry }: EntryFormProps) {
               <FormItem className="flex-1">
                 <FormControl>
                   <Textarea
-                    placeholder="Tell me about your day..."
+                    placeholder="Tell me about your day... (⌘ + Enter to save)"
                     className="resize-none"
                     onKeyDown={handleKeyDown}
                     rows={1}
