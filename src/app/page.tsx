@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import * as React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Sparkles, BookHeart, CalendarCheck, ArrowRight, BookText } from 'lucide-react';
@@ -29,9 +30,11 @@ export default function WelcomePage() {
     },
   ];
 
-  if (user) {
-    router.push('/journal');
-  }
+  React.useEffect(() => {
+    if (user) {
+      router.push('/journal');
+    }
+  }, [user, router]);
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background text-foreground">
