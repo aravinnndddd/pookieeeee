@@ -1,6 +1,6 @@
 'use client';
 import { format, formatDistanceToNow } from 'date-fns';
-import { MapPin, User, Building, Tag, CalendarIcon } from 'lucide-react';
+import { MapPin, User, Building, Tag, CalendarIcon, Trash2 } from 'lucide-react';
 
 import { type JournalEntry } from '@/types';
 import {
@@ -12,22 +12,47 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 type EntryCardProps = {
   entry: JournalEntry;
+  onDelete: (id: string) => void;
 };
 
-export function EntryCard({ entry }: EntryCardProps) {
+export function EntryCard({ entry, onDelete }: EntryCardProps) {
   return (
     <Card className="w-full transition-shadow duration-300 hover:shadow-md">
       <CardHeader>
-        <CardTitle className="font-headline text-lg">
-          {format(new Date(entry.dateTime), 'EEEE, MMMM d, yyyy')}
-        </CardTitle>
-        <CardDescription>
-          {format(new Date(entry.dateTime), 'p')} &middot;{' '}
-          {formatDistanceToNow(new Date(entry.dateTime), { addSuffix: true })}
-        </CardDescription>
+        <div className="flex items-center justify-between">
+            <div>
+                 <CardTitle className="font-headline text-lg">
+                    {format(new Date(entry.dateTime), 'EEEE, MMMM d, yyyy')}
+                </CardTitle>
+                <CardDescription>
+                {format(new Date(entry.dateTime), 'p')} &middot;{' '}
+                {formatDistanceToNow(new Date(entry.dateTime), { addSuffix: true })}
+                </CardDescription>
+            </div>
+             <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon" onClick={() => onDelete(entry.id)}>
+                        <Trash2 className="h-4 w-4 text-muted-foreground transition-colors hover:text-destructive" />
+                        <span className="sr-only">Delete Entry</span>
+                    </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                    <p>Delete Entry</p>
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
+        </div>
       </CardHeader>
       <CardContent>
         <p className="whitespace-pre-wrap text-base">{entry.text}</p>

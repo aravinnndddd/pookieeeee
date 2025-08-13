@@ -9,6 +9,7 @@ import {
   Home,
   ScrollText,
   Search as SearchIcon,
+  Trash2,
 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -25,6 +26,16 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 
@@ -35,6 +46,7 @@ function JournalPage() {
   const [entries, setEntries] = useLocalStorage<JournalEntry[]>('journal-entries', []);
   const [loading, setLoading] = React.useState(true);
   const [isClient, setIsClient] = React.useState(false);
+  const [entryToDelete, setEntryToDelete] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     // This runs only on the client, after the component has mounted.
@@ -49,6 +61,17 @@ function JournalPage() {
     const entryWithId = { ...newEntry, id: new Date().toISOString() };
     const updatedEntries = [entryWithId, ...entries];
     setEntries(updatedEntries.sort((a,b) => new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime()));
+  };
+
+  const handleDeleteRequest = (id: string) => {
+    setEntryToDelete(id);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (entryToDelete) {
+      setEntries(entries.filter(entry => entry.id !== entryToDelete));
+      setEntryToDelete(null);
+    }
   };
 
   const handleExport = () => {
@@ -166,7 +189,7 @@ function JournalPage() {
                 <Skeleton className="h-24 w-full" />
               </div>
             ) : view === 'timeline' ? (
-              <Timeline entries={filteredEntries} />
+              <Timeline entries={filteredEntries} onDelete={handleDeleteRequest} />
             ) : (
               <CalendarView
                 entries={entries}
@@ -177,7 +200,7 @@ function JournalPage() {
              {view === 'calendar' && selectedDate && !loading && (
                 <div className="mt-4 h-full">
                     <h2 className="text-lg font-semibold mb-2 font-headline px-2">Entries for {format(selectedDate, 'PPP')}</h2>
-                    <Timeline entries={filteredEntries} />
+                    <Timeline entries={filteredEntries} onDelete={handleDeleteRequest} />
                 </div>
             )}
           </main>
@@ -187,6 +210,22 @@ function JournalPage() {
           <EntryForm onNewEntry={handleNewEntry} />
         </footer>
       </div>
+
+       <AlertDialog open={entryToDelete !== null} onOpenChange={(open) => !open && setEntryToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your
+              journal entry.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setEntryToDelete(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteConfirm}>Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </TooltipProvider>
   );
 }

@@ -6,9 +6,10 @@ import { ScrollArea } from './ui/scroll-area';
 
 type TimelineProps = {
   entries: JournalEntry[];
+  onDelete: (id: string) => void;
 };
 
-export function Timeline({ entries }: TimelineProps) {
+export function Timeline({ entries, onDelete }: TimelineProps) {
   if (entries.length === 0) {
     return (
       <div className="flex h-full items-center justify-center">
@@ -24,7 +25,7 @@ export function Timeline({ entries }: TimelineProps) {
     <ScrollArea className="h-full">
       <div className="space-y-4 pr-4">
         {entries.map((entry) => (
-          <EntryCard key={entry.id} entry={entry} />
+          <EntryCard key={entry.id} entry={entry} onDelete={onDelete} />
         ))}
       </div>
     </ScrollArea>
