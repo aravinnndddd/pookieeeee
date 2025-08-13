@@ -29,11 +29,12 @@ import {
 import { db } from '@/lib/firebase';
 import { getTagsForEntry } from '@/app/actions';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useLocalStorage } from '@/hooks/use-local-storage';
 
 
 function JournalPage() {
-  const [view, setView] = React.useState<'timeline' | 'calendar'>('timeline');
-  const [searchQuery, setSearchQuery] = React.useState('');
+  const [view, setView] = useLocalStorage<'timeline' | 'calendar'>('journal-view', 'timeline');
+  const [searchQuery, setSearchQuery] = useLocalStorage('journal-search','');
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>();
 
   const entriesRef = collection(db, 'entries');
