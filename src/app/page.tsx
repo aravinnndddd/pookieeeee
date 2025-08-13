@@ -11,22 +11,16 @@ export default function WelcomePage() {
       icon: <Sparkles className="h-8 w-8 text-primary" />,
       title: 'AI-Powered Tagging',
       description: 'Our smart AI automatically tags your entries with people, places, and topics, making it easy to find memories.',
-      image: 'https://placehold.co/600x400.png',
-      hint: 'magic journal',
     },
     {
       icon: <BookHeart className="h-8 w-8 text-primary" />,
       title: 'Timeline View',
       description: 'Scroll through your memories in a beautiful, chronological timeline. Relive your moments day by day.',
-      image: 'https://placehold.co/600x400.png',
-      hint: 'diary book',
     },
     {
       icon: <CalendarCheck className="h-8 w-8 text-primary" />,
       title: 'Calendar View',
       description: 'Get a bird\'s-eye view of your month. See which days you\'ve written entries for at a glance.',
-      image: 'https://placehold.co/600x400.png',
-      hint: 'cute calendar',
     },
   ];
 
@@ -74,16 +68,8 @@ export default function WelcomePage() {
             </div>
             <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-2 md:grid-cols-3 lg:gap-12">
               {features.map((feature) => (
-                <Card key={feature.title} className="overflow-hidden transition-shadow hover:shadow-lg h-full flex flex-col">
-                   <Image
-                      src={feature.image}
-                      alt={feature.title}
-                      width={600}
-                      height={400}
-                      className="w-full h-40 object-cover"
-                      data-ai-hint={feature.hint}
-                    />
-                  <CardHeader className="flex flex-row items-center gap-4 pb-2">
+                <Card key={feature.title} className="transition-shadow hover:shadow-lg h-full flex flex-col p-4 text-center items-center justify-center">
+                  <CardHeader className="flex flex-col items-center gap-4 pb-2">
                     {feature.icon}
                     <CardTitle className="font-headline text-xl">{feature.title}</CardTitle>
                   </CardHeader>
