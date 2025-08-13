@@ -133,7 +133,7 @@ function JournalPage() {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Back to Home</p>
+                  <p>Home</p>
                 </TooltipContent>
               </Tooltip>
             {isClient && (
