@@ -27,7 +27,7 @@ type EntryCardProps = {
 
 export function EntryCard({ entry, onDelete }: EntryCardProps) {
   return (
-    <Card className="w-full transition-shadow duration-300 hover:shadow-md">
+    <Card className="w-4/5 mx-auto transition-shadow duration-300 hover:shadow-md">
       <CardHeader>
         <div className="flex items-center justify-between">
             <div>
