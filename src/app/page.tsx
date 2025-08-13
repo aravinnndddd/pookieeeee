@@ -46,7 +46,7 @@ export default function WelcomePage() {
             <div className="mt-8">
               <Button asChild size="lg" className="rounded-full font-bold">
                 <Link href="/journal">
-                  Start Writing <ArrowRight className="ml-2 h-5 w-5" />
+                  Get Started <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
             </div>
