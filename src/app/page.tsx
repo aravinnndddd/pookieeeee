@@ -36,12 +36,15 @@ export default function WelcomePage() {
         {/* Hero Section */}
         <section className="w-full py-20 md:py-32 lg:py-40 bg-primary/10">
           <div className="container mx-auto px-4 md:px-6 text-center">
-            <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl text-primary">
-              Welcome to Pookie Journal
+             <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
+              Rediscover Your
+              <span className="bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent"> Memories</span>
+              {' '} & {' '}
+              <span className="bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">Moments</span>
             </h1>
             <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl mt-4">
-              Your personal, AI-powered space to capture memories, thoughts, and dreams.
-              Designed to be cozy, cute, and just for you.
+              Explore how AI is transforming personal journaling, helping you
+              capture and recall life's important moments with incredible detail.
             </p>
             <div className="mt-8">
               <Button asChild size="lg" className="rounded-full font-bold">
