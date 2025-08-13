@@ -3,7 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Sparkles, BookHeart, CalendarCheck, ArrowRight } from 'lucide-react';
+import { Sparkles, BookHeart, CalendarCheck, ArrowRight, BookText } from 'lucide-react';
 
 export default function WelcomePage() {
   const features = [
@@ -32,6 +32,12 @@ export default function WelcomePage() {
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background text-foreground">
+       <header className="flex shrink-0 items-center justify-between border-b bg-background/95 px-4 py-2 backdrop-blur-sm sm:px-6">
+          <div className="flex items-center gap-2">
+            <BookText className="h-6 w-6 text-primary" />
+            <h1 className="font-headline text-xl font-bold">Pookie Journal</h1>
+          </div>
+        </header>
       <main className="flex-1">
         {/* Hero Section */}
         <section className="w-full py-20 md:py-32 lg:py-40 bg-primary/10">
