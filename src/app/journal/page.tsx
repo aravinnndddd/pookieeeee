@@ -123,19 +123,12 @@ function JournalPage() {
             <h1 className="font-headline text-xl font-bold">Pookie Journal</h1>
           </div>
           <div className="flex items-center gap-2">
-            <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" asChild>
-                    <Link href="/">
-                      <Home className="h-5 w-5" />
-                      <span className="sr-only">Go Home</span>
-                    </Link>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Home</p>
-                </TooltipContent>
-              </Tooltip>
+             <Button variant="ghost" asChild>
+                <Link href="/" className="flex items-center text-foreground hover:text-primary transition-colors">
+                  <Home className="mr-2 h-5 w-5" />
+                  Home
+                </Link>
+              </Button>
             {isClient && (
               <Tooltip>
                 <TooltipTrigger asChild>
