@@ -1,11 +1,16 @@
 'use client';
 import Link from 'next/link';
-import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Sparkles, BookHeart, CalendarCheck, ArrowRight, BookText } from 'lucide-react';
+import { useAuth } from '@/context/auth-context';
+import { UserNav } from '@/components/user-nav';
 
 export default function WelcomePage() {
+  const { user, loading, signInWithGoogle } = useAuth();
+  const router = useRouter();
+
   const features = [
     {
       icon: <Sparkles className="h-8 w-8 text-primary" />,
@@ -24,12 +29,19 @@ export default function WelcomePage() {
     },
   ];
 
+  if (user) {
+    router.push('/journal');
+  }
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-background text-foreground">
        <header className="flex shrink-0 items-center justify-between border-b bg-background/95 px-4 py-2 backdrop-blur-sm sm:px-6">
           <div className="flex items-center gap-2">
             <BookText className="h-6 w-6 text-primary" />
             <h1 className="font-headline text-xl font-bold">Pookie Journal</h1>
+          </div>
+           <div className="flex items-center gap-4">
+              {user && <UserNav />}
           </div>
         </header>
       <main className="flex-1">
@@ -47,11 +59,19 @@ export default function WelcomePage() {
               capture and recall life's important moments with incredible detail.
             </p>
             <div className="mt-8">
-              <Button asChild size="lg" className="rounded-full hover:text-white ease duration-500 transition-all font-bold">
-                <Link href="/journal">
-                  Get Started <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
+              {loading ? (
+                <Button size="lg" className="rounded-full font-bold" disabled>Loading...</Button>
+              ) : user ? (
+                <Button asChild size="lg" className="rounded-full hover:text-white ease duration-500 transition-all font-bold">
+                  <Link href="/journal">
+                    Go to Journal <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
+              ) : (
+                 <Button onClick={signInWithGoogle} size="lg" className="rounded-full hover:text-white ease duration-500 transition-all font-bold">
+                    Sign in with Google <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              )}
             </div>
           </div>
         </section>

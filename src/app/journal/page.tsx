@@ -1,18 +1,20 @@
 'use client';
 
 import * as React from 'react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   BookText,
   CalendarDays,
   Download,
-  Home,
   ScrollText,
   Search as SearchIcon,
   Trash2,
 } from 'lucide-react';
 import { format } from 'date-fns';
+import { collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, where } from 'firebase/firestore';
 
+import { db } from '@/lib/firebase';
+import { useAuth } from '@/context/auth-context';
 import { type JournalEntry } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,12 +22,6 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { EntryForm } from '@/components/entry-form';
 import { Timeline } from '@/components/timeline';
 import { CalendarView } from '@/components/calendar-view';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -38,37 +34,58 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLocalStorage } from '@/hooks/use-local-storage';
+import { UserNav } from '@/components/user-nav';
+
 
 function JournalPage() {
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
+
   const [view, setView] = useLocalStorage<'timeline' | 'calendar'>('journal-view', 'timeline');
   const [searchQuery, setSearchQuery] = useLocalStorage('journal-search', '');
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>();
-  const [entries, setEntries] = useLocalStorage<JournalEntry[]>('journal-entries', []);
+  const [entries, setEntries] = React.useState<JournalEntry[]>([]);
   const [loading, setLoading] = React.useState(true);
-  const [isClient, setIsClient] = React.useState(false);
   const [entryToDelete, setEntryToDelete] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    // This runs only on the client, after the component has mounted.
-    setIsClient(true);
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 500); 
-    return () => clearTimeout(timer);
-  }, []);
+    if (!authLoading && !user) {
+      router.push('/');
+    }
+  }, [user, authLoading, router]);
 
-  const handleNewEntry = (newEntry: Omit<JournalEntry, 'id'>) => {
-    const entryWithId = { ...newEntry, id: new Date().toISOString() };
-    const updatedEntries = [entryWithId, ...entries];
-    setEntries(updatedEntries.sort((a,b) => new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime()));
+  React.useEffect(() => {
+    if (user) {
+      const fetchEntries = async () => {
+        setLoading(true);
+        const entriesCollection = collection(db, 'users', user.uid, 'entries');
+        const q = query(entriesCollection, orderBy('dateTime', 'desc'));
+        const querySnapshot = await getDocs(q);
+        const fetchedEntries = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as JournalEntry));
+        setEntries(fetchedEntries);
+        setLoading(false);
+      };
+      fetchEntries();
+    } else {
+        setEntries([]);
+        setLoading(false);
+    }
+  }, [user]);
+
+  const handleNewEntry = async (newEntry: Omit<JournalEntry, 'id'>) => {
+    if (!user) return;
+    const docRef = await addDoc(collection(db, 'users', user.uid, 'entries'), newEntry);
+    const entryWithId = { ...newEntry, id: docRef.id };
+    setEntries([entryWithId, ...entries]);
   };
 
   const handleDeleteRequest = (id: string) => {
     setEntryToDelete(id);
   };
 
-  const handleDeleteConfirm = () => {
-    if (entryToDelete) {
+  const handleDeleteConfirm = async () => {
+    if (entryToDelete && user) {
+      await deleteDoc(doc(db, 'users', user.uid, 'entries', entryToDelete));
       setEntries(entries.filter(entry => entry.id !== entryToDelete));
       setEntryToDelete(null);
     }
@@ -91,20 +108,21 @@ function JournalPage() {
     let result = entries;
 
     if (view === 'calendar' && selectedDate) {
+      const selectedDateString = selectedDate.toDateString();
       result = result.filter(
-        entry =>
-          new Date(entry.dateTime).toDateString() === selectedDate.toDateString()
+        entry => new Date(entry.dateTime).toDateString() === selectedDateString
       );
     }
 
     if (searchQuery) {
+      const lowercasedQuery = searchQuery.toLowerCase();
       result = result.filter(entry =>
         Object.values(entry).some(value => {
             if (typeof value === 'string') {
-                return value.toLowerCase().includes(searchQuery.toLowerCase());
+                return value.toLowerCase().includes(lowercasedQuery);
             }
             if (Array.isArray(value)) {
-                return value.some(item => typeof item === 'string' && item.toLowerCase().includes(searchQuery.toLowerCase()));
+                return value.some(item => typeof item === 'string' && item.toLowerCase().includes(lowercasedQuery));
             }
             return false;
         })
@@ -113,9 +131,16 @@ function JournalPage() {
     
     return result;
   }, [entries, searchQuery, view, selectedDate]);
+  
+  if (authLoading || !user) {
+    return (
+        <div className="flex h-screen w-full items-center justify-center">
+            <Skeleton className="h-24 w-full max-w-md" />
+        </div>
+    );
+  }
 
   return (
-    <TooltipProvider>
       <div className="flex h-screen w-full flex-col bg-background text-foreground">
         <header className="flex shrink-0 items-center justify-between border-b bg-background/95 px-4 py-2 backdrop-blur-sm sm:px-6">
           <div className="flex items-center gap-2">
@@ -123,25 +148,11 @@ function JournalPage() {
             <h1 className="font-headline text-xl font-bold">Pookie Journal</h1>
           </div>
           <div className="flex items-center gap-2">
-             <Button variant="ghost" asChild>
-                <Link href="/" className="flex items-center text-foreground hover:text-primary transition-colors">
-                  <Home className="mr-2 h-5 w-5" />
-                  Home
-                </Link>
-              </Button>
-            {isClient && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" onClick={handleExport} disabled={entries.length === 0}>
-                    <Download className="h-5 w-5" />
-                    <span className="sr-only">Export Data</span>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Export all entries as JSON</p>
-                </TooltipContent>
-              </Tooltip>
-            )}
+             <UserNav />
+             <Button variant="ghost" size="icon" onClick={handleExport} disabled={entries.length === 0}>
+                <Download className="h-5 w-5" />
+                <span className="sr-only">Export Data</span>
+            </Button>
           </div>
         </header>
 
@@ -219,7 +230,6 @@ function JournalPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </TooltipProvider>
   );
 }
 

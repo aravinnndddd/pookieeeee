@@ -2,39 +2,32 @@
 
 import { useState, useEffect } from 'react';
 
+// This hook is no longer the primary way of storing journal entries, 
+// but it is still used for saving user preferences like view mode and search queries.
 export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((val: T) => T)) => void] {
-  // State to store our value
-  // Pass initial state function to useState so logic is only executed once
   const [storedValue, setStoredValue] = useState<T>(() => {
     if (typeof window === 'undefined') {
       return initialValue;
     }
     try {
-      // Get from local storage by key
       const item = window.localStorage.getItem(key);
-      // Parse stored json or if none return initialValue
       return item ? JSON.parse(item) : initialValue;
     } catch (error) {
-      // If error also return initialValue
-      console.log(error);
+      console.error(error);
       return initialValue;
     }
   });
 
-  // useEffect to update local storage when the state changes
   useEffect(() => {
     if (typeof window !== 'undefined') {
       try {
-        // Allow value to be a function so we have same API as useState
         const valueToStore =
           typeof storedValue === 'function'
             ? storedValue(storedValue)
             : storedValue;
-        // Save state to local storage
         window.localStorage.setItem(key, JSON.stringify(valueToStore));
       } catch (error) {
-        // A more advanced implementation would handle the error case
-        console.log(error);
+        console.error(error);
       }
     }
   }, [key, storedValue]);
