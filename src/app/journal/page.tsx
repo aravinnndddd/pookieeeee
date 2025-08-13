@@ -6,6 +6,7 @@ import {
   BookText,
   CalendarDays,
   Download,
+  Home,
   ScrollText,
   Search as SearchIcon,
   Trash2,
@@ -148,6 +149,10 @@ function JournalPage() {
             <h1 className="font-headline text-xl font-bold">Pookie Journal</h1>
           </div>
           <div className="flex items-center gap-2">
+            <Button variant="ghost" onClick={() => router.push('/')} className="hover:text-primary">
+              <Home className="h-5 w-5" />
+              Home
+            </Button>
              <UserNav />
              <Button variant="ghost" size="icon" onClick={handleExport} disabled={entries.length === 0}>
                 <Download className="h-5 w-5" />
@@ -169,7 +174,7 @@ function JournalPage() {
             </div>
             <Tabs
               value={view}
-              onValueChange={value => setView(value as 'timeline' | 'calendar')}
+              onValueChange={(value) => setView(value as 'timeline' | 'calendar')}
               className="w-full sm:w-auto"
             >
               <TabsList className="grid w-full grid-cols-2 sm:w-auto">
@@ -213,9 +218,8 @@ function JournalPage() {
         <footer className="shrink-0 border-t bg-background/95 px-4 py-3 backdrop-blur-sm sm:px-6">
           <EntryForm onNewEntry={handleNewEntry} />
         </footer>
-      </div>
-
-       <AlertDialog open={entryToDelete !== null} onOpenChange={(open) => !open && setEntryToDelete(null)}>
+      
+       <AlertDialog open={entryToDelete !== null} onOpenChange={(open) => { if (!open) setEntryToDelete(null); }}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
@@ -230,6 +234,7 @@ function JournalPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+    </div>
   );
 }
 
