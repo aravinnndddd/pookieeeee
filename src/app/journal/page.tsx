@@ -1,10 +1,12 @@
 'use client';
 
 import * as React from 'react';
+import Link from 'next/link';
 import {
   BookText,
   CalendarDays,
   Download,
+  Home,
   ScrollText,
   Search as SearchIcon,
 } from 'lucide-react';
@@ -98,6 +100,19 @@ function JournalPage() {
             <h1 className="font-headline text-xl font-bold">Pookie Journal</h1>
           </div>
           <div className="flex items-center gap-2">
+            <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" asChild>
+                    <Link href="/">
+                      <Home className="h-5 w-5" />
+                      <span className="sr-only">Go Home</span>
+                    </Link>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Back to Home</p>
+                </TooltipContent>
+              </Tooltip>
             {isClient && (
               <Tooltip>
                 <TooltipTrigger asChild>
