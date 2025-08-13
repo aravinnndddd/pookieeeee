@@ -9,9 +9,6 @@ import {
   Search as SearchIcon,
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { useCollection } from 'react-firebase-hooks/firestore';
-import { collection, query, orderBy } from 'firebase/firestore';
-
 
 import { type JournalEntry } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -26,26 +23,30 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { db } from '@/lib/firebase';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 
-
 function JournalPage() {
   const [view, setView] = useLocalStorage<'timeline' | 'calendar'>('journal-view', 'timeline');
-  const [searchQuery, setSearchQuery] = useLocalStorage('journal-search','');
+  const [searchQuery, setSearchQuery] = useLocalStorage('journal-search', '');
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>();
+  const [entries, setEntries] = useLocalStorage<JournalEntry[]>('journal-entries', []);
+  const [loading, setLoading] = React.useState(true);
 
-  const entriesRef = collection(db, 'entries');
-  // Since there is no user, we can order all entries by date.
-  const entriesQuery = query(entriesRef, orderBy('dateTime', 'desc'));
-  const [entriesSnapshot, loading] = useCollection(entriesQuery);
+  React.useEffect(() => {
+    // Simulate loading for better UX, and to handle initial mount
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 500); 
+    return () => clearTimeout(timer);
+  }, []);
 
-  const entries: JournalEntry[] = React.useMemo(() => {
-    if (!entriesSnapshot) return [];
-    return entriesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as JournalEntry));
-  }, [entriesSnapshot]);
-  
+  const handleNewEntry = (newEntry: Omit<JournalEntry, 'id'>) => {
+    const entryWithId = { ...newEntry, id: new Date().toISOString() };
+    const updatedEntries = [entryWithId, ...entries];
+    setEntries(updatedEntries.sort((a,b) => new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime()));
+  };
+
   const handleExport = () => {
     if (entries.length === 0) return;
     const dataStr = JSON.stringify(entries, null, 2);
@@ -164,7 +165,7 @@ function JournalPage() {
         </div>
 
         <footer className="shrink-0 border-t bg-background/95 px-4 py-3 backdrop-blur-sm sm:px-6">
-          <EntryForm />
+          <EntryForm onNewEntry={handleNewEntry} />
         </footer>
       </div>
     </TooltipProvider>

@@ -1,6 +1,5 @@
 export type JournalEntry = {
   id: string;
-  uid: string; // User ID from Firebase Auth
   text: string;
   dateTime: string; // ISO string
   people: string[];
