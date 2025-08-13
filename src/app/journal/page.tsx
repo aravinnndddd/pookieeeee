@@ -32,9 +32,11 @@ function JournalPage() {
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>();
   const [entries, setEntries] = useLocalStorage<JournalEntry[]>('journal-entries', []);
   const [loading, setLoading] = React.useState(true);
+  const [isClient, setIsClient] = React.useState(false);
 
   React.useEffect(() => {
-    // Simulate loading for better UX, and to handle initial mount
+    // This runs only on the client, after the component has mounted.
+    setIsClient(true);
     const timer = setTimeout(() => {
       setLoading(false);
     }, 500); 
@@ -96,17 +98,19 @@ function JournalPage() {
             <h1 className="font-headline text-xl font-bold">Pookie Journal</h1>
           </div>
           <div className="flex items-center gap-2">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" onClick={handleExport} disabled={entries.length === 0}>
-                  <Download className="h-5 w-5" />
-                  <span className="sr-only">Export Data</span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Export all entries as JSON</p>
-              </TooltipContent>
-            </Tooltip>
+            {isClient && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" onClick={handleExport} disabled={entries.length === 0}>
+                    <Download className="h-5 w-5" />
+                    <span className="sr-only">Export Data</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Export all entries as JSON</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
           </div>
         </header>
 
