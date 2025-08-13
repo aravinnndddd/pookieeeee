@@ -43,7 +43,7 @@ export function EntryCard({ entry, onDelete }: EntryCardProps) {
                 <Tooltip>
                     <TooltipTrigger asChild>
                     <Button variant="ghost" size="icon" onClick={() => onDelete(entry.id)}>
-                        <Trash2 className="h-4 w-4 text-muted-foreground transition-colors hover:text-destructive" />
+                        <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
                         <span className="sr-only">Delete Entry</span>
                     </Button>
                     </TooltipTrigger>
@@ -59,25 +59,25 @@ export function EntryCard({ entry, onDelete }: EntryCardProps) {
       </CardContent>
       <CardFooter className="flex flex-wrap gap-2 text-sm">
         {entry.people?.map((person) => (
-            <Badge key={person} variant="secondary" className="bg-pink-100 text-pink-800 hover:bg-pink-200 dark:bg-pink-900/50 dark:text-pink-300 dark:hover:bg-pink-900/70">
+            <Badge key={person} variant="secondary" className="bg-pink-100 text-pink-800 hover:bg-pink-100 dark:bg-pink-900/50 dark:text-pink-300 dark:hover:bg-pink-900/70">
               <User className="mr-1 h-3 w-3" />
               {person}
             </Badge>
           ))}
         {entry.locations?.map((location) => (
-          <Badge key={location} variant="secondary" className="bg-primary/10 text-primary/90 hover:bg-primary/20 dark:bg-primary/20 dark:text-primary-foreground/80 dark:hover:bg-primary/30">
+          <Badge key={location} variant="secondary" className="bg-primary/10 text-primary/90 hover:bg-primary/10 dark:bg-primary/20 dark:text-primary-foreground/80 dark:hover:bg-primary/30">
             <MapPin className="mr-1 h-3 w-3" />
             {location}
           </Badge>
         ))}
         {entry.organizations?.map((org) => (
-          <Badge key={org} variant="secondary" className="bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900/50 dark:text-blue-300 dark:hover:bg-blue-900/70">
+          <Badge key={org} variant="secondary" className="bg-blue-100 text-blue-800 hover:bg-blue-100 dark:bg-blue-900/50 dark:text-blue-300 dark:hover:bg-blue-900/70">
             <Building className="mr-1 h-3 w-3" />
             {org}
           </Badge>
         ))}
         {entry.dates?.map((date) => (
-            <Badge key={date} variant="secondary" className="bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-900/50 dark:text-purple-300 dark:hover:bg-purple-900/70">
+            <Badge key={date} variant="secondary" className="bg-purple-100 text-purple-800 hover:bg-purple-100 dark:bg-purple-900/50 dark:text-purple-300 dark:hover:bg-purple-900/70">
               <CalendarIcon className="mr-1 h-3 w-3" />
               {date}
             </Badge>
