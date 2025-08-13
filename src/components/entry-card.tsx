@@ -19,7 +19,7 @@ type EntryCardProps = {
 
 export function EntryCard({ entry }: EntryCardProps) {
   return (
-    <Card className="w-full transition-shadow duration-300 hover:shadow-md">
+    <Card className="w-full bg-black transition-shadow duration-300 hover:shadow-md">
       <CardHeader>
         <CardTitle className="font-headline text-lg">
           {format(new Date(entry.dateTime), 'EEEE, MMMM d, yyyy')}

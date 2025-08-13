@@ -5,21 +5,21 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Send, Loader2 } from 'lucide-react';
+import { collection, addDoc } from 'firebase/firestore';
 
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { getTagsForEntry } from '@/app/actions';
+import { type JournalEntry } from '@/types';
+import { db } from '@/lib/firebase';
 
 const formSchema = z.object({
   text: z.string().min(1, 'Entry cannot be empty.'),
 });
 
-type EntryFormProps = {
-  onNewEntry: (text: string) => Promise<void>;
-};
-
-export function EntryForm({ onNewEntry }: EntryFormProps) {
+export function EntryForm() {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const { toast } = useToast();
 
@@ -30,11 +30,30 @@ export function EntryForm({ onNewEntry }: EntryFormProps) {
     },
   });
 
+  const handleNewEntry = async (text: string) => {
+    const tags = await getTagsForEntry(text);
+
+    const newEntry: Omit<JournalEntry, 'id'> = {
+      uid: 'anonymous',
+      text: text,
+      dateTime: new Date().toISOString(),
+      people: tags.people || [],
+      locations: tags.locations || [],
+      organizations: tags.organizations || [],
+      dates: tags.dates || [],
+      topics: tags.topics || [],
+      media: [],
+    };
+    await addDoc(collection(db, 'entries'), newEntry);
+  };
+
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (!values.text.trim()) return;
     setIsSubmitting(true);
+
     try {
-      await onNewEntry(values.text);
+      await handleNewEntry(values.text);
       form.reset();
       toast({
         title: 'Memory Saved',

@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useCollection } from 'react-firebase-hooks/firestore';
-import { collection, query, orderBy, addDoc } from 'firebase/firestore';
+import { collection, query, orderBy } from 'firebase/firestore';
 
 
 import { type JournalEntry } from '@/types';
@@ -27,7 +27,6 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { db } from '@/lib/firebase';
-import { getTagsForEntry } from '@/app/actions';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 
@@ -46,24 +45,6 @@ function JournalPage() {
     if (!entriesSnapshot) return [];
     return entriesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as JournalEntry));
   }, [entriesSnapshot]);
-
-
-  const handleNewEntry = async (text: string) => {
-    const tags = await getTagsForEntry(text);
-
-    const newEntry: Omit<JournalEntry, 'id'> = {
-      uid: 'anonymous',
-      text: text,
-      dateTime: new Date().toISOString(),
-      people: tags.people || [],
-      locations: tags.locations || [],
-      organizations: tags.organizations || [],
-      dates: tags.dates || [],
-      topics: tags.topics || [],
-      media: [],
-    };
-    await addDoc(collection(db, 'entries'), newEntry);
-  };
   
   const handleExport = () => {
     if (entries.length === 0) return;
@@ -183,7 +164,7 @@ function JournalPage() {
         </div>
 
         <footer className="shrink-0 border-t bg-background/95 px-4 py-3 backdrop-blur-sm sm:px-6">
-          <EntryForm onNewEntry={handleNewEntry} />
+          <EntryForm />
         </footer>
       </div>
     </TooltipProvider>
